@@ -26,6 +26,14 @@ app.use((req, res, next) => {
     headers.cookie = req.headers.cookie
   }
 
+  if (req.headers['content-length']) {
+    headers['content-length'] = req.headers['content-length']
+  }
+
+  if (req.headers['content-type']) {
+    headers['content-type'] = req.headers['content-type']
+  }
+
   const options = {
     baseURL: process.env.TARGET_BASE,
     method: req.method,
@@ -38,24 +46,16 @@ app.use((req, res, next) => {
 
   if (req.readable) {
     options.data = req
-
-    if (req.headers['content-length']) {
-      options.headers['content-length'] = req.headers['content-length']
-    }
-
-    if (req.headers['content-type']) {
-      options.headers['content-type'] = req.headers['content-type']
-    }
   }
 
   axios.request(options)
   .then((targetResponse) => {
-    console.log(
-      'target response:',
-      targetResponse.status,
-      targetResponse.statusText,
-      targetResponse.headers
-    )
+    // console.log(
+    //   'target response:',
+    //   targetResponse.status,
+    //   targetResponse.statusText,
+    //   targetResponse.headers
+    // )
 
     res.status = targetResponse.statusText
     res.statusCode = targetResponse.status
