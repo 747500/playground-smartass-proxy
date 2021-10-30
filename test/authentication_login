@@ -1,0 +1,18 @@
+#!/bin/bash
+
+. ./.env
+
+URL="${API_BASE}/api/authentication/login"
+
+#if [ ! -f "$1" ]; then
+#	echo "$0: User object/file not found"
+#	exit 1
+#fi
+
+http --print HhBb --session=./.session.json \
+ POST "$URL" << JSON
+{
+	"email": "$1",
+	"password": "$2"
+}
+JSON
