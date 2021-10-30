@@ -5,7 +5,7 @@ import morgan from 'morgan';
 import express from 'express';
 import axios from 'axios';
 
-import bodyParser from 'body-parser';
+//import bodyParser from 'body-parser';
 //import cookieParser from 'cookie-parser'
 
 const app = express();
