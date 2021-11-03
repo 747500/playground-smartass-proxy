@@ -5,7 +5,7 @@ import morgan from 'morgan';
 import express from 'express';
 import axios from 'axios';
 
-//import bodyParser from 'body-parser';
+import bodyParser from 'body-parser';
 //import cookieParser from 'cookie-parser'
 
 const app = express();
@@ -16,19 +16,39 @@ app.use(
   morgan(':method :url :status :response-time ms - :res[content-length]'),
 );
 //app.use(bodyParser.text())
-//app.use(express.json())
-//app.use(bodyParser.json())
+app.use(express.json());
+app.use(bodyParser.json());
 
 //app.set('trust proxy', 1) // trust first proxy
 
 app.use((req, res, next) => {
   const headers = {};
+  let body;
+
+  console.log();
+  console.log(`\turl`, req.url);
+  console.log(`\tquery`, req.query);
+  console.log(`\tbody`, req.body);
 
   ['cookie', 'content-length', 'content-type'].forEach((h) => {
     if (req.headers[h]) {
       headers[h] = req.headers[h];
     }
   });
+
+  if (
+    req.headers['content-type'] &&
+    req.headers['content-type'].startsWith('application/json')
+  ) {
+    body = JSON.stringify(req.body);
+    headers['content-length'] = body.length;
+
+    console.log(body);
+  } else {
+    if (req.readable) {
+      body = req;
+    }
+  }
 
   const options = {
     baseURL: process.env.TARGET_BASE,
@@ -40,8 +60,8 @@ app.use((req, res, next) => {
     validateStatus: (_status) => true, // do not throw http errors
   };
 
-  if (req.readable) {
-    options.data = req;
+  if (body) {
+    options.data = body;
   }
 
   axios
