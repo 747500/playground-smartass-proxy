@@ -1,10 +1,15 @@
 # playground-smartass-proxy
 
 
-rename .env-example to .env
+Rename .env-example to .env
 
-edit .env
+Edit .env
 
-run
+Run:
+
+npm run start:dev
+npm run start:prod
+
+or just
 
 node index.mjs
