@@ -26,9 +26,9 @@ app.use((req, res, next) => {
   let body;
 
   console.log();
-  console.log(`\turl`, req.url);
-  console.log(`\tquery`, req.query);
-  console.log(`\tbody`, req.body);
+  console.log(`\tUrl:`, req.url);
+  console.log(`\tQuery:`, req.query);
+  console.log(`\tBody:`, req.body);
 
   ['cookie', 'content-length', 'content-type'].forEach((h) => {
     if (req.headers[h]) {
@@ -36,18 +36,15 @@ app.use((req, res, next) => {
     }
   });
 
-  if (
+  const isJson =
     req.headers['content-type'] &&
-    req.headers['content-type'].startsWith('application/json')
-  ) {
+    req.headers['content-type'].endsWith('/json');
+
+  if (isJson) {
     body = JSON.stringify(req.body);
     headers['content-length'] = body.length;
-
-    console.log(body);
-  } else {
-    if (req.readable) {
-      body = req;
-    }
+  } else if (req.readable) {
+    body = req;
   }
 
   const options = {
