@@ -3,9 +3,15 @@
 
 Rename .env-example to .env
 
-Edit .env
+Edit
 
-Run:
+- .env
+- Dockerfile
+- docker-compose.yml
+
+
+
+Run
 
 npm run start:dev
 npm run start:prod
