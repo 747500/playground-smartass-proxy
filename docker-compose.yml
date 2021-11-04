@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  proxy:
+    build: ./
+    restart: unless-stopped
+    ports:
+      - '3025:3025'
+    #volumes:
+    #  - type: volume
+    #    source: backend_userfiles
+    #    target: /userfiles
+
+#networks:
+#  default:
+#    external:
+#      name: my-shared-network
+
+#volumes:
+#  backend_userfiles:
+#    external: true
