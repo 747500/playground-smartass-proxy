@@ -1,6 +1,8 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
+import { Buffer } from 'buffer';
+
 import morgan from 'morgan';
 import express from 'express';
 import axios from 'axios';
@@ -21,6 +23,10 @@ app.use(bodyParser.json());
 
 //app.set('trust proxy', 1) // trust first proxy
 
+function isJson(h) {
+  return h['content-type'] && h['content-type'].match(/\/json/);
+}
+
 app.use((req, res, next) => {
   const headers = {};
   let body;
@@ -36,11 +42,7 @@ app.use((req, res, next) => {
     }
   });
 
-  const isJson =
-    req.headers['content-type'] &&
-    req.headers['content-type'].endsWith('/json');
-
-  if (isJson) {
+  if (isJson(req.headers)) {
     body = JSON.stringify(req.body);
     headers['content-length'] = body.length;
   } else if (req.readable) {
@@ -64,21 +66,31 @@ app.use((req, res, next) => {
   axios
     .request(options)
     .then((targetResponse) => {
-      // console.log(
-      //   'target response:',
-      //   targetResponse.status,
-      //   targetResponse.statusText,
-      //   targetResponse.headers
-      // )
-
-      res.status = targetResponse.statusText;
-      res.statusCode = targetResponse.status;
-
+      res.statusMessage = targetResponse.statusText;
+      res.status(targetResponse.status);
       res.set(targetResponse.headers);
+
+      if (isJson(targetResponse.headers)) {
+        let body = '';
+
+        targetResponse.data.on('data', (data) => {
+          body += data.toString();
+        });
+
+        targetResponse.data.on('end', () => {
+          const parsed = JSON.parse(body);
+          console.log('\tres body:', parsed);
+          const responseData = Buffer.from(body);
+          res.setHeader('content-length', responseData.length);
+          res.end(responseData);
+        });
+
+        return;
+      }
 
       targetResponse.data.pipe(res);
     })
-    .catch((err) => console.error(err));
+    .catch(next);
 });
 
 const server = app
