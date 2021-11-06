@@ -71,18 +71,22 @@ app.use((req, res, next) => {
       res.set(targetResponse.headers);
 
       if (isJson(targetResponse.headers)) {
-        let body = '';
+        let body;
 
         targetResponse.data.on('data', (data) => {
-          body += data.toString();
+          if (undefined == body) {
+            body = data;
+            return;
+          }
+
+          body = Buffer.concat([body, data]);
         });
 
         targetResponse.data.on('end', () => {
-          const parsed = JSON.parse(body);
+          const parsed = JSON.parse(body.toString());
           console.log('\tres body:', parsed);
-          const responseData = Buffer.from(body);
-          res.setHeader('content-length', responseData.length);
-          res.end(responseData);
+          res.setHeader('content-length', body.length);
+          res.end(body);
         });
 
         return;
