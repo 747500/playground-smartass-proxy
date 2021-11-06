@@ -8,7 +8,6 @@
     "start": "node index.mjs",
     "start:dev": "NODE_ENV=development node index.mjs",
     "start:prod": "NODE_ENV=production node index.mjs",
-    "start": "node index.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -20,10 +19,12 @@
     "cookie-parser": "^1.4.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "stream-chain": "^2.2.4",
+    "stream-json": "^1.7.3"
   },
   "devDependencies": {
-    "eslint": "^8.1.0",
+    "eslint": "^8.2.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-only-warn": "^1.0.3",
     "eslint-plugin-prettier": "^4.0.0",

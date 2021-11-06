@@ -5,10 +5,17 @@ import { Buffer } from 'buffer';
 
 import morgan from 'morgan';
 import express from 'express';
-import axios from 'axios';
-
 import bodyParser from 'body-parser';
 //import cookieParser from 'cookie-parser'
+import axios from 'axios';
+
+import streamJson from 'stream-json';
+const { parser } = streamJson;
+
+import Assembler from 'stream-json/Assembler.js';
+
+import streamChain from 'stream-chain';
+const { chain } = streamChain;
 
 const app = express();
 const HTTP_PORT = process.env.HTTP_PORT;
@@ -71,6 +78,16 @@ app.use((req, res, next) => {
       res.set(targetResponse.headers);
 
       if (isJson(targetResponse.headers)) {
+        const pipeline = chain([targetResponse.data, parser()]);
+        const asm = Assembler.connectTo(pipeline);
+        asm.on('done', (asm) => {
+          console.log(asm.current);
+          const body = Buffer.from(JSON.stringify(asm.current));
+          res.setHeader('content-length', body.length);
+          res.end(body);
+        });
+
+        /*
         let body;
 
         targetResponse.data.on('data', (data) => {
@@ -88,7 +105,7 @@ app.use((req, res, next) => {
           res.setHeader('content-length', body.length);
           res.end(body);
         });
-
+        */
         return;
       }
 
